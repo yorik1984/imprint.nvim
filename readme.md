@@ -1,18 +1,54 @@
 # imprint.nvim
 
-create beautiful code screenshots instantly from Neovim, using TOhtml.
+**WYSIWYG code screenshots from Neovim (TOhtml → PNG).**  
+Create images from the current buffer or a visual selection - with the same colorscheme, highlights, and diagnostics you see in Neovim.
 
-`imprint.nvim` is a Neovim plugin to take beautiful code-snippets images from code.
+*   Buffer **or** selected range
+*   Preserves Neovim highlights and colors
+*   Optional titlebar icon (via `nvim-web-devicons`)
+*   Save to file and/or copy to clipboard (X11 only, WIP)
 
 ![sample screenshot](sample.png)
 
-Code is exactly what you see in Neovim, preserved with the same colors, highlights, and diagnostics.
+## Install
+
+### lazy.nvim
+
+```lua
+{
+    "glyccogen/imprint.nvim",
+    cmd = "Imprint",
+    dependencies = {
+        "nvim-tree/nvim-web-devicons", -- optional, for file icons in the titlebar
+    },
+    config = function()
+        require("imprint").setup({})
+    end,
+}
+````
+
+### packer.nvim
+
+```lua
+use {
+    "glyccogen/imprint.nvim",
+    cmd = "Imprint",
+    requires = {
+        "nvim-tree/nvim-web-devicons", -- optional, for file icons in the titlebar
+    },
+    config = function()
+        require("imprint").setup({})
+    end
+}
+```
 
 ## Dependencies
 
 -   **Python 3.8+** with `pip` and `venv`
 -   `nvim-web-devicons` for file icons in the titlebar
 -   `xclip` for copying images to the clipboard
+
+> first run downloads Chromium via Playwright (for HTML -> PNG rendering)
 
 ## Configuration and default values
 
@@ -23,7 +59,7 @@ require('imprint').setup({
 	default_title = nil,
 
 	-- when true, prompt for a title if none was provided and --notitle is not set
-    required_title_by_default = true,
+	required_title_by_default = true,
 
 	-- copy the generated image to the clipboard after saving
 	-- works with xclip only
@@ -60,10 +96,10 @@ require('imprint').setup({
 create a screenshot from the current buffer or a selected range.
 
 ```vim
-:Imprint [-c | --clipboard-only] [--notitle] [title]
+:['<,'>]Imprint [-c | --clipboard-only] [--notitle] [title]
 ```
 
--   `-c`, `--clipboard-only` - copy the image to the clipboard and donot save it to disk
+-   `-c`, `--clipboard-only` - copy the image to the clipboard and do not save it to disk
 -   `--notitle` - do not prompt for a title when none is provided
 -   `title` - optional title for the window header
 
@@ -76,3 +112,4 @@ create a screenshot from the current buffer or a selected range.
 ```bash
 /path/to/imprint/venv/bin/playwright install --with-deps chromium
 ```
+
