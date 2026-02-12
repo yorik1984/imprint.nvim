@@ -1,0 +1,63 @@
+name: set release codename
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: tag (containing major.minor)
+        required: true
+        type: string
+      patch:
+        description: optional patch suffix for codename
+        required: false
+        default: "0"
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  codename:
+    uses: glyccogen/release-codenamer/.github/workflows/release-codename.yml@stable
+    with:
+      tag: ${{ inputs.tag }}
+      patch: ${{ fromJSON(inputs.patch) }}
+      update_release: false
+
+  upsert_release:
+    runs-on: ubuntu-latest
+    needs: codename
+    steps:
+      - uses: actions/github-script@v7
+        env:
+          TAG: ${{ inputs.tag }}
+          CODENAME: ${{ needs.codename.outputs.codename }}
+        with:
+          script: |
+            const tag = process.env.TAG;
+            const name = process.env.CODENAME;
+
+            try {
+              const rel = await github.rest.repos.getReleaseByTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag,
+              });
+
+              await github.rest.repos.updateRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: rel.data.id,
+                name,
+              });
+            } catch (err) {
+              if (err.status !== 404) throw err;
+
+              await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: tag,
+                name,
+              });
+            }
+
