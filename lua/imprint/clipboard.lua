@@ -2,9 +2,21 @@ local M = {}
 local uv = vim.uv
 
 local function read_binary(path)
-	local data = uv.fs_read(uv.fs_open(path, "r", 438), uv.fs_stat(path).size, 0)
+	local fd, open_err = uv.fs_open(path, "r", 438)
+	if not fd then
+		return nil, "failed to open file: " .. tostring(open_err or "")
+	end
+
+	local stat, stat_err = uv.fs_fstat(fd)
+	if not stat or not stat.size then
+		uv.fs_close(fd)
+		return nil, "failed to stat file: " .. tostring(stat_err or "")
+	end
+
+	local data, read_err = uv.fs_read(fd, stat.size, 0)
+	uv.fs_close(fd)
 	if not data then
-		return nil, "failed to read file"
+		return nil, "failed to read file: " .. tostring(read_err or "")
 	end
 	return data, nil
 end
