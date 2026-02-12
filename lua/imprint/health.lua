@@ -3,11 +3,6 @@ local clipboard = require("imprint.clipboard")
 
 local health = vim.health or require("health")
 
-local function plugin_root()
-	local path = debug.getinfo(1, "S").source:sub(2):match("(.*/)")
-	return (path or "./") .. "../../"
-end
-
 local function path_exists(path)
 	return vim.fn.filereadable(path) == 1 or vim.fn.isdirectory(path) == 1
 end
@@ -65,19 +60,18 @@ local function check_optional()
 end
 
 local function check_venv()
-	local root = plugin_root()
-	local venv_path = root .. "/venv"
+	local venv_path = vim.fn.stdpath("data") .. "/imprint.nvim/venv"
 	local deps_flag = venv_path .. "/.deps_installed"
 
 	if path_exists(deps_flag) then
-		health.ok("playwright venv ready")
+		health.ok("playwright venv ready: " .. venv_path)
 		return
 	end
 
 	if path_exists(venv_path) then
-		health.warn("venv exists but Playwright not installed yet")
+		health.warn("venv exists but Playwright not installed yet: " .. venv_path)
 	else
-		health.info("venv not created yet (will be created on first run)")
+		health.info("venv not created yet (will be created on first run): " .. venv_path)
 	end
 end
 

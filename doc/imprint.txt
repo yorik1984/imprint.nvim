@@ -46,4 +46,5 @@ Reports missing dependencies and venv / Playwright status.
 TROUBLESHOOTING                                                      *imprint-trouble*
 
 If Playwright install fails, run:
-  /path/to/imprint/venv/bin/playwright install --with-deps chromium
+  NVIM_DATA_DIR="$(nvim --headless -u NONE --cmd 'lua io.write(vim.fn.stdpath("data"))' +qa)"
+  "$NVIM_DATA_DIR/imprint.nvim/venv/bin/playwright" install --with-deps chromium

@@ -126,5 +126,7 @@ create a screenshot from the current buffer or a selected range.
 `imprint.nvim` installs Chromium for Playwright. If step fails, system may be missing OS packages Playwright needs. In that case, run:
 
 ```bash
-/path/to/imprint/venv/bin/playwright install --with-deps chromium
+NVIM_DATA_DIR="$(nvim --headless -u NONE --cmd 'lua io.write(vim.fn.stdpath("data"))' +qa)"
+"$NVIM_DATA_DIR/imprint.nvim/venv/bin/playwright" install --with-deps chromium
 ```
+

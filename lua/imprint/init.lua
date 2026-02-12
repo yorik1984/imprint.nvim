@@ -12,7 +12,8 @@ do
 	local path = debug.getinfo(1, "S").source:sub(2):match("(.*/)")
 	M.plugin_path = path .. "../../"
 end
-M.venv_path = M.plugin_path .. "/venv"
+M.data_path = vim.fn.stdpath("data") .. "/imprint.nvim"
+M.venv_path = M.data_path .. "/venv"
 
 local function check_deps(on_complete)
 	local deps_installed = M.venv_path .. "/.deps_installed"
@@ -20,6 +21,7 @@ local function check_deps(on_complete)
 		vim.schedule(on_complete)
 		return
 	end
+	vim.fn.mkdir(M.data_path, "p")
 
 	local function run_job(cmd, on_done)
 		local stdout = {}
