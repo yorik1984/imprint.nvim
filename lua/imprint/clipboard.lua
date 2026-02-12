@@ -73,15 +73,18 @@ function M.copy_image(image_path, provider)
 	end
 
 	if provider == "x11" then
-		local ok, err = run_cmd({ "xclip", "-selection", "clipboard", "-t", "image/png", "-i", image_path })
+		local ok, err = run_cmd({ "xclip", "-selection", "clipboard", "-t", "image/png", "-i", image_path }, nil, 350)
 		if ok then return true, nil end
+		if ok == nil and err == "timeout" then
+			return true, nil
+		end
 		return false, "xclip failed: " .. err
 	elseif provider == "wayland" then
 		local data, read_err = read_binary(image_path)
 		if not data then
 			return false, read_err
 		end
-		local ok, err = run_cmd({ "wl-copy", "--type", "image/png" }, data, 1000)
+		local ok, err = run_cmd({ "wl-copy", "--type", "image/png" }, data, 350)
 		if ok then return true, nil end
 		if ok == nil and err == "timeout" then
 			return true, nil
