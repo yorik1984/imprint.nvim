@@ -13,7 +13,7 @@ Create images from the current buffer or a visual selection - with the same colo
 *   Optional titlebar icon (via `nvim-web-devicons`)
 *   Save to file and/or copy to clipboard
 
-![sample screenshot](sample.png)
+![demo gif](demo.gif)
 
 ## Install
 
